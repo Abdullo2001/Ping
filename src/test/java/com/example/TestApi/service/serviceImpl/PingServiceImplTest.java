@@ -1,21 +1,37 @@
 package com.example.TestApi.service.serviceImpl;
 
+import com.example.TestApi.TestStatus;
+import com.example.TestApi.dto.PingDto;
+import com.example.TestApi.exceptions.PingEntityException;
+import com.example.TestApi.exceptions.PingFailStatusException;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PingServiceImplTest {
 
-    @Test
-    void delete() {
+    private final PingServiceImpl service;
+
+    PingServiceImplTest(PingServiceImpl service) {
+        this.service = service;
     }
 
     @Test
-    void add() {
+    void delete() throws PingEntityException {
+        service.delete(1L);
+    }
+
+    @Test
+    void add() throws PingFailStatusException {
+        PingDto dto=new PingDto();
+        dto.setIpOrDomen("www.com");
+        dto.setCheckDate("08.08.2024");
+        dto.setStatus(TestStatus.FINISHED);
+        dto.setResult("ok");
+        service.add(dto);
     }
 
     @Test
     void getPingIpOrDomen() {
+
     }
 
     @Test

@@ -2,10 +2,14 @@ package com.example.TestApi.entity;
 
 import com.example.TestApi.TestStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.lang.reflect.Type;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -26,7 +30,10 @@ public class PingEntity {
     public String checkDate;
 
     @Column(name = "status")
-    public TestStatus status;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    public Set<TestStatus> status;
 
     @Column(name = "result")
     public String result;

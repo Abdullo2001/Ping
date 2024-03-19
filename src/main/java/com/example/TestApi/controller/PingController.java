@@ -3,9 +3,14 @@ package com.example.TestApi.controller;
 
 import com.example.TestApi.dto.PingDto;
 import com.example.TestApi.entity.PingEntity;
+import com.example.TestApi.exceptions.PingEntityException;
+import com.example.TestApi.exceptions.PingFailStatusException;
 import com.example.TestApi.service.PingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +21,9 @@ import java.util.List;
 public class PingController {
     private final PingService service;
 
-    @GetMapping("/check/")
+    @GetMapping("/check")
     public List<PingDto> getPingCheckDate(@RequestBody PingDto dto) {
+
         return service.getPingCheckDate(dto.checkDate);
     }
 
@@ -31,14 +37,20 @@ public class PingController {
         return service.getAllPing();
     }
 
+
     @PostMapping
-    public void addPing(@RequestBody PingDto dto){
-        service.add(dto);
+    public void addPing( @RequestBody PingDto dto) throws  PingFailStatusException {
+        try{
+            service.add(dto);
+        }catch(Exception exception){
+            new PingFailStatusException("status is fail");
+        }
+
     }
 
 
-    @DeleteMapping("/id")
-    public void deletePing(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public void deletePing(@PathVariable Long id) throws PingEntityException {
         service.delete(id);
     }
 

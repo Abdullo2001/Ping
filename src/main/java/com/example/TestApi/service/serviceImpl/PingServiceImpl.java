@@ -1,8 +1,11 @@
 package com.example.TestApi.service.serviceImpl;
 
 
+import com.example.TestApi.TestStatus;
 import com.example.TestApi.dto.PingDto;
 import com.example.TestApi.entity.PingEntity;
+import com.example.TestApi.exceptions.PingEntityException;
+import com.example.TestApi.exceptions.PingFailStatusException;
 import com.example.TestApi.repository.PingRepository;
 import com.example.TestApi.service.PingService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.rmi.NoSuchObjectException;
 import java.util.*;
 
 @Service
@@ -19,21 +23,28 @@ public class PingServiceImpl implements PingService {
     private final PingRepository repository;
 
     @Override
-    public void delete(Long id){
+    public void delete(Long id) throws PingEntityException {
         Optional<PingEntity> entity = repository.findById(id);
+        if(entity.isEmpty()){
+            throw new PingEntityException("No such ping with the id: "+id);
+        }
         repository.delete(entity.get());
     }
 
 
     @Override
-    public void add(PingDto dto) {
-        PingEntity entity = new PingEntity();
-        entity.setCheckDate(dto.checkDate);
-        entity.setIpOrDomen(dto.ipOrDomen);
-        entity.setResult(dto.result);
-        entity.setStatus(dto.status);
-        repository.save(entity);
-
+    public void add(PingDto dto) throws PingFailStatusException {
+        for(TestStatus testStatus:TestStatus.values()){
+            if(dto.status.equals(testStatus)){
+                PingEntity entity = new PingEntity();
+                entity.setCheckDate(dto.checkDate);
+                entity.setIpOrDomen(dto.ipOrDomen);
+                entity.setResult(dto.result);
+                entity.setStatus(dto.status);
+                repository.save(entity);
+            }
+        }
+        throw new PingFailStatusException(dto.status+" is fail");
     }
 
     @Override
@@ -41,8 +52,8 @@ public class PingServiceImpl implements PingService {
         List<PingEntity> entities = repository.findAll();
         List<PingDto> dtos = new ArrayList<>();
 
-        for(PingEntity entity:entities){
-            if(ipOrDomen.equals(entity.ipOrDomen)){
+        for (PingEntity entity : entities) {
+            if (ipOrDomen.equals(entity.ipOrDomen)) {
                 PingDto dto = new PingDto();
                 dto.setId(entity.getId());
                 dto.setIpOrDomen(entity.ipOrDomen);
@@ -53,6 +64,8 @@ public class PingServiceImpl implements PingService {
             }
         }
         return dtos;
+
+
     }
 
     @Override
