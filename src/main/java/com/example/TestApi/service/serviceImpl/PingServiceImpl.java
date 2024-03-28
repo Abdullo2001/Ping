@@ -13,12 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.rmi.NoSuchObjectException;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PingServiceImpl implements PingService {
+
 
     private final PingRepository repository;
 
@@ -34,17 +34,29 @@ public class PingServiceImpl implements PingService {
 
     @Override
     public void add(PingDto dto) throws PingFailStatusException {
-        for(TestStatus testStatus:TestStatus.values()){
-            if(dto.status.equals(testStatus)){
-                PingEntity entity = new PingEntity();
-                entity.setCheckDate(dto.checkDate);
-                entity.setIpOrDomen(dto.ipOrDomen);
-                entity.setResult(dto.result);
-                entity.setStatus(dto.status);
-                repository.save(entity);
+
+            PingEntity entity = new PingEntity();
+            entity.setCheckDate(dto.checkDate);
+            entity.setIpOrDomen(dto.ipOrDomen);
+            entity.setResult(dto.result);
+            if (checkStatus(dto.getStatus().toString())){
+                entity.setStatus(dto.getStatus());
+            }else{
+                throw new PingFailStatusException("status not  found!");
+            }
+            
+            repository.save(entity);
+
+
+    }
+
+    private boolean checkStatus(String status) {
+        for (TestStatus status1:TestStatus.values()) {
+            if(status1.name().equals(status)){
+                return true;
             }
         }
-        throw new PingFailStatusException(dto.status+" is fail");
+        return false;
     }
 
     @Override

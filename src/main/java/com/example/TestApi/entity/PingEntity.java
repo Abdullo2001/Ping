@@ -1,6 +1,7 @@
 package com.example.TestApi.entity;
 
 import com.example.TestApi.TestStatus;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,21 +20,22 @@ import java.util.Set;
 @Table(name="find")
 public class PingEntity {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ip")
+    @Column(name = "ipOrDomen")
     public String ipOrDomen;
 
     @Column(name = "check_date")
     public String checkDate;
 
     @Column(name = "status")
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @NotNull
-    public Set<TestStatus> status;
+    public TestStatus status;
 
     @Column(name = "result")
     public String result;

@@ -1,6 +1,10 @@
 package com.example.TestApi.dto;
 
 import com.example.TestApi.TestStatus;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +28,8 @@ public class PingDto {
 
     public String checkDate;
 
-    public Set<TestStatus> status;
+
+    public TestStatus status;
 
     public String result;
 
